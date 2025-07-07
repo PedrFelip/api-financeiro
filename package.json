@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "knex": "tsx ./node_modules/knex/bin/cli.js"
+    "knex": "tsx --no-warnings ./node_modules/knex/bin/cli.js"
   },
   "repository": {
     "type": "git",
