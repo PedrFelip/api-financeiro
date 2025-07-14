@@ -9,11 +9,11 @@ app.get('/', async () => {
 })
 
 app.get('/transactions', async () => {
-  const transactions = await knex('transactions').where({
+  const transactions = await knex('transactions').insert({
     id: crypto.randomUUID(),
     title: 'Teste',
     amount: 100.00,
-  }).select('*').returning('*')
+  }).returning('*')
 
   return transactions
 })
