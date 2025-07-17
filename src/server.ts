@@ -17,7 +17,7 @@ app.register(transactionsRoutes, {
 })
 
 app.listen({
-  port: env.PORT,
+  port: 3333,
 }).then(() => {
   console.log('Server.ts esta rodando na porta 3333')
 })
