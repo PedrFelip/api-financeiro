@@ -38,7 +38,12 @@ export async function transactionsRoutes(app: FastifyInstance) {
 
     const { id } = schemaGetTransaction.parse(request.params)
 
-    const getTransaction = await knex('transactions').where('id', id).andWhere('session_id', sessionId).first().select()
+    const getTransaction = await knex('transactions')
+      .where({
+        id,
+        session_id: sessionId,
+      })
+      .first().select()
 
     return { getTransaction }
   })
