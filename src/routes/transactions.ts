@@ -2,35 +2,49 @@ import { FastifyInstance } from 'fastify'
 import { knex } from '../database'
 import { z } from 'zod'
 import { randomUUID } from 'node:crypto'
+import { checkCookie } from '../middlewares/checkcoekies'
 
 export async function transactionsRoutes(app: FastifyInstance) {
 
-  app.get('/', async() => {
-    const transactions = await knex('transactions').select()
+  app.get('/', {
+   preHandler: [checkCookie]
+  }, async(request) => {
+
+    const { sessionId } = request.cookies
+    const transactions = await knex('transactions').where('session_id', sessionId).select()
 
     return { transactions }
   })
 
-  app.get('/summary', async() => {
-    const summary = await knex('transactions').sum('amount', { as: 'amount' }).first()
+  app.get('/summary', {
+    preHandler: [checkCookie]
+  }, async(request) => {
+
+    const { sessionId } = request.cookies
+
+    const summary = await knex('transactions').where('session_id', sessionId).sum('amount', { as: 'amount' }).first()
 
     return { summary }
   })
 
-  app.get('/:id', async(request) => {
+  app.get('/:id', {
+   preHandler: [checkCookie]
+  }, async(request) => {
 
     const schemaGetTransaction = z.object({
-      id: z.string().uuid(),
+      id: z.string(),
     })
+    const { sessionId } = request.cookies
 
     const { id } = schemaGetTransaction.parse(request.params)
 
-    const getTransaction = await knex('transactions').where('id', id).first().select()
+    const getTransaction = await knex('transactions').where('id', id).andWhere('session_id', sessionId).first().select()
 
     return { getTransaction }
   })
 
   app.post('/', async (request, reply) => {
+    
     const schemaCreateTransaction = z.object({
       title: z.string(),
       amount: z.number(),
